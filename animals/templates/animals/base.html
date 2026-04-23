@@ -9,11 +9,23 @@
 <nav>
     <strong>Zoo Management</strong> |
     <a href="{% url 'animals:home' %}">Home</a> |
-    <a href="{% url 'animals:animal-list' %}">All Animals</a> |
-    <a href="{% url 'animals:animal-create' %}">Add Animal</a> |
-    <a href="{% url 'animals:animal-search' %}">Search</a> |
-    <a href="{% url 'animals:animal-archive-index' %}">Archive</a> |
-    <a href="{% url 'animals:animal-today-archive' %}">Added Today</a>
+
+    {% if user.is_authenticated %}
+        <a href="{% url 'animals:animal-list' %}">All Animals</a> |
+        <a href="{% url 'animals:animal-create' %}">Add Animal</a> |
+        <a href="{% url 'animals:animal-search' %}">Search</a> |
+        <a href="{% url 'animals:animal-archive-index' %}">Archive</a> |
+        <a href="{% url 'animals:animal-today-archive' %}">Added Today</a> |
+        <a href="{% url 'password_change' %}">Change Password</a> |
+        Logged in as <strong>{{ user.username }}</strong> |
+        <form method="post" action="{% url 'logout' %}" style="display:inline">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a> |
+        <a href="{% url 'animals:signup' %}">Sign Up</a>
+    {% endif %}
 </nav>
 
 <hr>

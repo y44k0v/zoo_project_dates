@@ -49,4 +49,7 @@ urlpatterns = [
     # --- DateDetailView: A single animal identified by date + pk ---
     path('animals/archive/<int:year>/<int:month>/<int:day>/<int:pk>/',
          views.AnimalDateDetailView.as_view(), name='animal-date-detail'),
+    
+    # Authentication
+    path('accounts/signup/', views.SignUpView.as_view(), name='signup'),
 ]

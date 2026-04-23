@@ -9,6 +9,13 @@ from django.views.generic.dates import (
     WeekArchiveView, DayArchiveView, TodayArchiveView,
     DateDetailView,
 )
+# Authentication imports
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
+from django.views.generic import CreateView
+from django.urls import reverse_lazy
+
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Animal
 from .forms import AnimalSearchForm
@@ -53,7 +60,7 @@ class HomeView(TemplateView):
 # ---------------------------------------------------------------------------
 # ListView — All animals
 # ---------------------------------------------------------------------------
-class AnimalListView(ListView):
+class AnimalListView(LoginRequiredMixin, ListView):
     """
     ListView queries all Animal objects and passes them to the template
     as 'object_list' (or 'animal_list' since model = Animal).
@@ -85,7 +92,7 @@ class AnimalListView(ListView):
 # ---------------------------------------------------------------------------
 # DetailView — Single animal
 # ---------------------------------------------------------------------------
-class AnimalDetailView(DetailView):
+class AnimalDetailView(LoginRequiredMixin, DetailView):
     """
     DetailView looks up a single Animal by its pk (from the URL).
     It passes the object to the template as 'object' or 'animal'
@@ -122,7 +129,7 @@ class AnimalDetailView(DetailView):
 # ---------------------------------------------------------------------------
 # CreateView — Add a new animal
 # ---------------------------------------------------------------------------
-class AnimalCreateView(CreateView):
+class AnimalCreateView(LoginRequiredMixin, CreateView):
     """
     CreateView displays a blank ModelForm for Animal and saves a new
     instance on valid POST. After saving, it redirects to the URL
@@ -149,7 +156,7 @@ class AnimalCreateView(CreateView):
 # ---------------------------------------------------------------------------
 # UpdateView — Edit an existing animal
 # ---------------------------------------------------------------------------
-class AnimalUpdateView(UpdateView):
+class AnimalUpdateView(LoginRequiredMixin, UpdateView):
     """
     UpdateView is identical to CreateView but pre-fills the form with
     the existing Animal data (looked up by pk from the URL).
@@ -172,7 +179,7 @@ class AnimalUpdateView(UpdateView):
 # ---------------------------------------------------------------------------
 # DeleteView — Delete an animal
 # ---------------------------------------------------------------------------
-class AnimalDeleteView(DeleteView):
+class AnimalDeleteView(LoginRequiredMixin, DeleteView):
     """
     DeleteView shows a confirmation page on GET, then deletes the object
     and redirects to success_url on POST.
@@ -196,7 +203,7 @@ class AnimalDeleteView(DeleteView):
 # ---------------------------------------------------------------------------
 # FormView — Search animals
 # ---------------------------------------------------------------------------
-class AnimalSearchView(FormView):
+class AnimalSearchView(LoginRequiredMixin, FormView):
     """
     FormView for searching animals. Uses GET so results are bookmarkable.
     We override get() to run the search whenever query params are present.
@@ -253,7 +260,7 @@ class AnimalSearchView(FormView):
 # ---------------------------------------------------------------------------
 # ArchiveIndexView — All years that have animals
 # ---------------------------------------------------------------------------
-class AnimalArchiveIndexView(ArchiveIndexView):
+class AnimalArchiveIndexView(LoginRequiredMixin, ArchiveIndexView):
     """
     ArchiveIndexView groups all objects by year using 'date_field'.
     It provides 'date_list' in the context: a list of years that have records.
@@ -278,7 +285,7 @@ class AnimalArchiveIndexView(ArchiveIndexView):
 # ---------------------------------------------------------------------------
 # YearArchiveView — Animals added in a specific year
 # ---------------------------------------------------------------------------
-class AnimalYearArchiveView(YearArchiveView):
+class AnimalYearArchiveView(LoginRequiredMixin, YearArchiveView):
     """
     YearArchiveView filters objects whose date_field falls in the given year.
     The year is captured from the URL (e.g. /archive/2024/).
@@ -305,7 +312,7 @@ class AnimalYearArchiveView(YearArchiveView):
 # ---------------------------------------------------------------------------
 # MonthArchiveView — Animals added in a specific month
 # ---------------------------------------------------------------------------
-class AnimalMonthArchiveView(MonthArchiveView):
+class AnimalMonthArchiveView(LoginRequiredMixin, MonthArchiveView):
     """
     MonthArchiveView filters by year + month.
     URL example: /archive/2024/3/
@@ -331,7 +338,7 @@ class AnimalMonthArchiveView(MonthArchiveView):
 # ---------------------------------------------------------------------------
 # WeekArchiveView — Animals added in a specific week
 # ---------------------------------------------------------------------------
-class AnimalWeekArchiveView(WeekArchiveView):
+class AnimalWeekArchiveView(LoginRequiredMixin, WeekArchiveView):
     """
     WeekArchiveView filters by year + ISO week number.
     URL example: /archive/2024/week/12/
@@ -354,7 +361,7 @@ class AnimalWeekArchiveView(WeekArchiveView):
 # ---------------------------------------------------------------------------
 # DayArchiveView — Animals added on a specific day
 # ---------------------------------------------------------------------------
-class AnimalDayArchiveView(DayArchiveView):
+class AnimalDayArchiveView(LoginRequiredMixin, DayArchiveView):
     """
     DayArchiveView filters by year + month + day.
     URL example: /archive/2024/3/15/
@@ -378,7 +385,7 @@ class AnimalDayArchiveView(DayArchiveView):
 # ---------------------------------------------------------------------------
 # TodayArchiveView — Animals added today
 # ---------------------------------------------------------------------------
-class AnimalTodayArchiveView(TodayArchiveView):
+class AnimalTodayArchiveView(LoginRequiredMixin, TodayArchiveView):
     """
     TodayArchiveView is exactly like DayArchiveView but automatically
     uses today's date — no date is needed in the URL.
@@ -401,7 +408,7 @@ class AnimalTodayArchiveView(TodayArchiveView):
 # ---------------------------------------------------------------------------
 # DateDetailView — Single animal identified by date + pk
 # ---------------------------------------------------------------------------
-class AnimalDateDetailView(DateDetailView):
+class AnimalDateDetailView(LoginRequiredMixin, DateDetailView):
     """
     DateDetailView retrieves a single object using both its pk AND the
     date_field value from the URL. This prevents URL guessing attacks
@@ -424,4 +431,30 @@ class AnimalDateDetailView(DateDetailView):
         animal = self.get_object()
         context['page_title'] = f'Animal: {animal.name} (Archive)'
         context['is_elderly'] = animal.age > 15
+        return context
+    
+
+
+class SignUpView(CreateView):
+    """
+    Uses Django's built-in UserCreationForm (username + password × 2).
+    On successful registration the user is logged in immediately and
+    redirected to the home page — no separate login step required.
+
+    Extra context added:
+      - page_title: for the heading
+    """
+    form_class = UserCreationForm
+    template_name = 'registration/signup.html'
+    success_url = reverse_lazy('animals:home')
+
+    def form_valid(self, form):
+        # Save the new user, then log them in straight away
+        response = super().form_valid(form)
+        login(self.request, self.obj)
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Create Account'
         return context

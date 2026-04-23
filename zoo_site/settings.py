@@ -110,3 +110,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Where to redirect after a successful login
+LOGIN_REDIRECT_URL = 'animals:home'
+
+# Where to send users who hit a @login_required page without being logged in
+LOGIN_URL = 'login'
+
+# Where to redirect after logout
+LOGOUT_REDIRECT_URL = 'login'
