@@ -1,0 +1,17 @@
+{% extends 'animals/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block heading %}{{ page_title }}{% endblock %}
+
+{% block content %}
+{# 'animal' or 'object' is the Animal instance provided by DeleteView #}
+
+<p>Are you sure you want to permanently delete <strong>{{ object.name }}</strong>?</p>
+<p>This action cannot be undone.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, Delete</button>
+    <a href="{{ object.get_absolute_url }}">Cancel</a>
+</form>
+{% endblock %}

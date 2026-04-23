@@ -1,0 +1,35 @@
+{% extends 'animals/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block heading %}{{ page_title }} — {{ animal_count }} animal(s){% endblock %}
+
+{% block content %}
+{# 'year' = the year as a datetime object; 'object_list' = animals that year #}
+{# 'date_list' = list of months with animals #}
+{# 'animal_count' and 'page_title' are extra variables #}
+
+<h2>Browse by month</h2>
+{% if date_list %}
+<ul>
+    {% for month in date_list %}
+    <li>
+        <a href="{% url 'animals:animal-month-archive' year.year month.month %}">
+            {{ month|date:"F" }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<h2>All Animals Added in {{ year.year }}</h2>
+{% if object_list %}
+<ul>
+    {% for animal in object_list %}
+    <li><a href="{{ animal.get_absolute_url }}">{{ animal }}</a> — {{ animal.date_added }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No animals were added this year.</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'animals/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block heading %}{{ page_title }} ({{ total_count }} total){% endblock %}
+
+{% block content %}
+{# 'animals' = context_object_name; 'total_count' and 'page_title' from get_context_data() #}
+
+{% if animals %}
+<table border="1">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Age (years)</th>
+            <th>Weight (kg)</th>
+            <th>Born in Captivity</th>
+            <th>Date Added</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for animal in animals %}
+        <tr>
+            <td><a href="{{ animal.get_absolute_url }}">{{ animal.name }}</a></td>
+            <td>{{ animal.age }}</td>
+            <td>{{ animal.weight }}</td>
+            <td>{{ animal.born_in_captivity|yesno:"Yes,No" }}</td>
+            <td>{{ animal.date_added }}</td>
+            <td>
+                <a href="{% url 'animals:animal-update' animal.pk %}">Edit</a> |
+                <a href="{% url 'animals:animal-delete' animal.pk %}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# Pagination — paginator and page_obj are provided automatically by ListView #}
+<p>
+    Page {{ page_obj.number }} of {{ paginator.num_pages }}
+    {% if page_obj.has_previous %}
+        | <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
+    {% if page_obj.has_next %}
+        | <a href="?page={{ page_obj.next_page_number }}">Next</a>
+    {% endif %}
+</p>
+
+{% else %}
+<p>No animals found.</p>
+{% endif %}
+
+{% endblock %}

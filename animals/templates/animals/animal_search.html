@@ -1,0 +1,48 @@
+{% extends 'animals/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block heading %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+<form method="get">
+    {# No {% csrf_token %} needed — GET requests don't modify data #}
+    {{ form.as_p }}
+    <button type="submit">Search</button>
+</form>
+
+{% if search_performed %}
+<hr>
+<h2>Results ({{ result_count }} found)</h2>
+
+{% if results %}
+<table border="1">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Weight (kg)</th>
+            <th>Born in Captivity</th>
+            <th>Date Added</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for animal in results %}
+        <tr>
+            <td>{{ animal.name }}</td>
+            <td>{{ animal.age }}</td>
+            <td>{{ animal.weight }}</td>
+            <td>{{ animal.born_in_captivity|yesno:"Yes,No" }}</td>
+            <td>{{ animal.date_added }}</td>
+            <td><a href="{{ animal.get_absolute_url }}">View</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No animals matched your search criteria.</p>
+{% endif %}
+{% endif %}
+
+{% endblock %}

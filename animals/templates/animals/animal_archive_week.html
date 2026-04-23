@@ -1,0 +1,18 @@
+{% extends 'animals/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block heading %}{{ page_title }}{% endblock %}
+
+{% block content %}
+{# 'week' = the week start date; 'object_list' = animals that week #}
+
+{% if object_list %}
+<ul>
+    {% for animal in object_list %}
+    <li><a href="{{ animal.get_absolute_url }}">{{ animal }}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No animals were added during this week.</p>
+{% endif %}
+{% endblock %}

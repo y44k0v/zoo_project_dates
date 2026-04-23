@@ -1,0 +1,25 @@
+{% extends 'animals/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block heading %}{{ page_title }}{% endblock %}
+
+{% block content %}
+{# 'animal' = context_object_name from DetailView #}
+{# 'is_elderly' and 'weight_category' are extra variables from get_context_data() #}
+
+<table border="1">
+    <tr><th>Name</th><td>{{ animal.name }}</td></tr>
+    <tr><th>Age</th><td>{{ animal.age }} year(s)
+        {% if is_elderly %}<em>(Elderly animal)</em>{% endif %}
+    </td></tr>
+    <tr><th>Weight</th><td>{{ animal.weight }} kg ({{ weight_category }})</td></tr>
+    <tr><th>Born in Captivity</th><td>{{ animal.born_in_captivity|yesno:"Yes,No" }}</td></tr>
+    <tr><th>Date Added</th><td>{{ animal.date_added }}</td></tr>
+</table>
+
+<p>
+    <a href="{% url 'animals:animal-update' animal.pk %}">Edit this animal</a> |
+    <a href="{% url 'animals:animal-delete' animal.pk %}">Delete this animal</a> |
+    <a href="{% url 'animals:animal-list' %}">Back to list</a>
+</p>
+{% endblock %}

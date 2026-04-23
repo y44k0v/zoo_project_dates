@@ -1,0 +1,17 @@
+{% extends 'animals/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block heading %}{{ page_title }}{% endblock %}
+
+{% block content %}
+{# 'form' is provided automatically by CreateView/UpdateView #}
+{# 'form_action' and 'page_title' are extra variables from get_context_data() #}
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">{{ form_action }} Animal</button>
+</form>
+
+<p><a href="{% url 'animals:animal-list' %}">Cancel — Back to list</a></p>
+{% endblock %}

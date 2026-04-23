@@ -1,0 +1,26 @@
+{% extends 'animals/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block heading %}{{ page_title }}{% endblock %}
+
+{% block content %}
+{# 'date_list' is provided by ArchiveIndexView — a list of years with animals #}
+{# 'total_years' is an extra variable from get_context_data() #}
+
+<p>The archive spans <strong>{{ total_years }}</strong> year(s).</p>
+
+{% if date_list %}
+<ul>
+    {% for year in date_list %}
+    <li>
+        <a href="{% url 'animals:animal-year-archive' year.year %}">
+            {{ year.year }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No animals have been added yet.</p>
+{% endif %}
+
+{% endblock %}

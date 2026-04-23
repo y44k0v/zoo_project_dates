@@ -1,0 +1,27 @@
+{% extends 'animals/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block heading %}{{ page_title }}{% endblock %}
+
+{% block content %}
+{# 'month' = the month as a datetime; 'object_list' = animals that month #}
+
+{% if object_list %}
+<ul>
+    {% for animal in object_list %}
+    <li>
+        <a href="{{ animal.get_absolute_url }}">{{ animal }}</a>
+        — added {{ animal.date_added }}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No animals were added during this month.</p>
+{% endif %}
+
+<p>
+    <a href="{% url 'animals:animal-year-archive' month.year %}">
+        Back to {{ month.year }} archive
+    </a>
+</p>
+{% endblock %}
