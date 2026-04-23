@@ -69,7 +69,7 @@ class AnimalListView(ListView):
     model = Animal
     template_name = 'animals/animal_list.html'
     context_object_name = 'animals'   # Renames 'object_list' to 'animals' in template
-    paginate_by = 5
+    paginate_by = 25
 
     def get_queryset(self):
         # Default ordering is defined in Meta; you can override it here.
